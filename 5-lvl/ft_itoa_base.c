@@ -1,34 +1,44 @@
 #include <stdlib.h>
+#include <stdio.h>
 
-char	*ft_itoa_base(int n, int base)
+int		ft_pow(int nb, int pow)
 {
-	char 	base_digits[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-	int 	converted_number[64];
-	int 	i = 0;
-	int 	value;
-	char 	*result;
+	if (pow == 0)
+		return (1);
+	else
+		return (nb * ft_pow(nb, pow - 1));
+}
 
-	value = n;
-	if (n < 0)
-		n = n * -1;
-	while (n != 0)
-	{
-		converted_number[i] = n % base;
-		n = n / base;
-		i++;
-	}
-	i--;
-	result = (char*)malloc(sizeof(char) * i);
+char	*ft_itoa_base(int value, int base)
+{
+	int		i;
+	char	*nbr;
+	int		neg;
+
+	i = 1;
+	neg = 0;
 	if (value < 0)
 	{
-		result[0] = '-';
-		value = 1;
+		if (base == 10)
+			neg = 1;
+		value *= -1;
 	}
-	while (i >= 0)
+	while (ft_pow(base, i) - 1 < value)
+		i++;
+	nbr = (char*)malloc(sizeof(nbr) * i);
+	nbr[i + neg] = '\0';
+	while (i-- > 0)
 	{
-		result[value] = base_digits[converted_number[i]];
-		i--;
-		n++;
+		nbr[i + neg] = (value % base) + (value % base > 9 ? 'A' - 10 : '0');
+		value = value / base;
 	}
-	return (result);
+	if (neg)
+		nbr[0] = '-';
+	return (nbr);
+}
+
+int		main(int argc, char **argv)
+{
+	printf("%s", ft_itoa_base(atoi(argv[1]), atoi(argv[2])));
+	return(0);
 }
