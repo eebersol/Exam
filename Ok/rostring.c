@@ -1,82 +1,115 @@
-#import <unistd.h>
-#import <stdlib.h>
-#import <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
 
+int count_word(char *str)
+{
+	int i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == ' ' && str[i + 1] != '\0')
+			return (3);
+		i++;
+	}
+	return (0);
+}
 
 int 	ft_strlen(char *str)
 {
 	int i;
 
-	i =0;
+	i = 0;
 	while (str[i] != '\0')
 		i++;
 	return (i);
 }
-char 	*skip_useless_space(char *str)
+
+char 	*cut_space(char *str)
 {
 	int i;
 	int j;
-	char *dst;
+	char *s1;
 
 	i = 0;
 	j = 0;
-	dst = (char*)malloc(sizeof(char) * ft_strlen(str) + 1);
+	s1 = (char*)malloc(sizeof(char) * (ft_strlen(str) + 1));
 	while (str[i] != '\0')
 	{
-		if (str[i] != ' ' || (str[i] == ' ' && str[i - 1] && str[i - 1] >= 33 && str[i - 1] <= 126))
-		{
-			dst[j] = str[i];
+		if (str[i] == ' ' || str[i] == '\t' || str[i] == '\v' || str[i] == '\r' || str[i] == '\n') {
+			str[i] = ' ';
+		}
+		if ((str[i] >= 33 && str[i] <= 126) || (str[i + 1] && str[i] == ' ' && str[i + 1] != ' ')) {;
+				s1[j] = str[i];
 			j++;
 		}
 		i++;
-
 	}
-	dst[j] = '\0';
-	return (dst);
+	return (s1);
 }
 
 char 	*rostring(char *str)
 {
-	char *dst;
+	char *s1;
+	char *first_word;
 	int i;
 	int j;
+	int k;
 
-	dst = (char*)malloc(sizeof(char) * (ft_strlen(str) + 1));
-	i = -1;
-	j = 0;
-	while (str[++i] != ' ' && str[i] != '\0')
-		dst[i] = str[i];
-	dst[i++] = '\0';
-	str = &str[i];
-	if (ft_strlen(str) == 0)
-		return (dst);
+	k = 0;
 	i = 0;
-	while (str[i] != '\0')
+	j = 0;
+	s1 = (char *)malloc(sizeof(char) * (ft_strlen(str) + 1));
+	first_word = (char*)malloc(sizeof(char) * (ft_strlen(str) + 1));
+	while (str[i] == ' ' || str[i] == '\t' || str[i] == '\v' || str[i] == '\r' || str[i] == '\n')
 		i++;
-	str[i++] = ' ';
-	while (dst[j] != '\0')
-	{
-		str[i + j] = dst[j];
+	s1 = &str[i];
+	s1 = cut_space(s1);
+	i = 0;
+	if (count_word(s1) != 0)
+		{
+		while (s1[j] != ' ')
+		{
+			first_word[i] = s1[j];
+			j++;
+			i++;
+		}
 		j++;
+		s1 = &s1[j];
+		i = ft_strlen(s1);
+		j = 0;
+		s1[i] = ' ';
+		i++;
+		while (k < ft_strlen(first_word)) {
+			s1[i] = first_word[j];
+			j++;
+			i++;
+			k++;
+		}
+		s1[i] = '\0';
+		return (s1);
+	} else {
+		s1[ft_strlen(s1)] = '\0';
+		return (s1);
 	}
-	free(dst);
-	return (str);
 }
 
-int 	main(int ac, char **av)
+int main(int ac, char **av)
 {
-	char *result;
+	char *str;
 
-	if (ac >= 2)
+	if (ac == 2)
 	{
-		result = (char*)malloc(sizeof(char) * (ft_strlen(av[1]) + 1));
-		result = skip_useless_space(av[1]);
-		result = rostring(result);
-		write(1, result, (ft_strlen(result)));
+		str = (char*)malloc(sizeof(char) * (ft_strlen(av[1]) + 1));
+		str = rostring(av[1]);
+		write (1, str, ft_strlen(str));
+		write(1, "\n", 1);
+
+	}
+	else {
+
+		printf("ici\n");
 		write(1, "\n", 1);
 	}
-	else
-		write(1, "\n", 1);
-
-
-}
+} 
